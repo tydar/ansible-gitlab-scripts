@@ -1,0 +1,56 @@
+- name: configure a gitlab runner node on Debian 10
+  remote_user: root
+  hosts: all
+  environment:
+      GITLAB_RUNNER_DISABLE_SKEL: true
+
+  tasks:
+      - name: ensure curl is installed
+        apt:
+            name: curl
+
+      - name: ensure gnupg is installed
+        apt:
+            name: gnupg
+
+      - name: update apt cache
+        apt:
+            update-cache: yes
+
+      - name: install debian keyring to allow https install for apt
+        apt:
+            name: debian-archive-keyring
+
+      - name: install apt-transport-https
+        apt:
+            name: apt-transport-https
+
+      - name: add gpg key
+        apt_key:
+            url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey 
+            state: present
+
+      - name: add package repo
+        apt_repository:
+            repo: deb https://packages.gitlab.com/runner/gitlab-runner/debian/ buster main
+            state: present
+
+      - name: add src repo
+        apt_repository:
+            repo: deb-src https://packages.gitlab.com/runner/gitlab-runner/debian/ buster main
+            state: present
+
+      - name: update apt cache
+        apt:
+            update-cache: yes
+
+      - name: copy APT pinning file to ensure gitlab repo used
+        copy:
+            src: "{{ playbook_dir }}/conf/pin-gitlab-runner.pref"
+            dest: /etc/apt/preferences.d/pin-gitlab-runner.pref
+
+      - name: install gitlab runner package
+        apt:
+            name: gitlab-runner
+
+# TODO: automate gitlab-runner registration with a secrets file

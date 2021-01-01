@@ -1,0 +1,37 @@
+- name: prepare Debian 10 system to act as build environment for conjurer project
+  hosts: all
+  remote_user: root
+
+  tasks:
+      - name: install qemu-system
+        apt:
+            name: qemu-system
+            install_recommends: no
+
+      - name: install libvirt-clients
+        apt:
+            name: libvirt-clients
+            install_recommends: no
+
+      - name: install libvirt-daemon-system
+        apt:
+            name: libvirt-daemon-system
+            install_recommends: no
+
+      - name: add gitlab-runner user to libvirt group
+        user:
+            name: gitlab-runner
+            group: libvirt
+            append: yes
+
+      - name: install python 3.x
+        apt:
+            name: "{{ item }}"
+        loop: 
+            - python3
+            - python3-dev
+            - python3-pip
+
+      - name: install poetry
+        pip:
+            name: poetry
