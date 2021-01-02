@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Gitlab Runner Ansible Scripts
 
 This is a small collection of quickly put-together ansible scripts to set up Gitlab runners with the shell executor environment properly configured to build my KVM Conjurer project.
@@ -16,10 +15,17 @@ $ ansible-playbook -i inventories/some-inventory.yml \
 To safely store the tokens used in registering a Gitlab runner, I use an `ansible-vault` encrypted file:
 
 ```
-$ cat YOUR_PASSWORD_HERE > secrets/keys.yml
 $ ansible-vault encrypt --vault-id ID@vaultpasswdfile secrets/keys.yml
 $ ansible-playbook -i inventories/some-inventory.yml \
                    -e secrets/keys.yml               \
                    --vault-id ID@vaultpasswdfile     \
                    configure-gitlab-runner.yml       \
+```
+
+where `secrets/keys.yml` is of the format
+
+```
+gitlab_url=http://your.url.com
+gitlab_api_token=YOUR_API_TOKEN
+gitlab_runner_token=YOUR_RUNNER_REGISTRATION_TOKEN
 ```
