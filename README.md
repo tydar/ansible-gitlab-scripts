@@ -29,3 +29,9 @@ gitlab_url=http://your.url.com
 gitlab_api_token=YOUR_API_TOKEN
 gitlab_runner_token=YOUR_RUNNER_REGISTRATION_TOKEN
 ```
+
+# Usage note
+
+As mentioned above, the script configure-gitlab-runner.yml uses the default python on Debian 10 (Python 2.7). The python-gitlab library version availabe is 1.15. This version *is* compatible with the `ansible.community.gitlab_runner` module. 
+
+The version of python-gitlab availabe on PyPI for Python 3.7 is 2.5 or so. This is not compatible with the Ansible module. I'm investigating whether a patch would be easy to produce or if the problem goes deeper than one broken instance of subscript notation.
