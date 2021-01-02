@@ -3,27 +3,22 @@
   hosts: all
   environment:
       GITLAB_RUNNER_DISABLE_SKEL: true
+  vars_files:
+      - secrets/keys.yml
 
   tasks:
       - name: ensure curl is installed
         apt:
-            name: curl
+            pkg:
+                - curl
+                - gnupg
+                - debian-archive-keyring
+                - apt-transport-https
+                - python-pip
 
-      - name: ensure gnupg is installed
-        apt:
-            name: gnupg
-
-      - name: update apt cache
-        apt:
-            update-cache: yes
-
-      - name: install debian keyring to allow https install for apt
-        apt:
-            name: debian-archive-keyring
-
-      - name: install apt-transport-https
-        apt:
-            name: apt-transport-https
+      - name: install python gitlab api
+        pip:
+            name: python-gitlab
 
       - name: add gpg key
         apt_key:
@@ -53,4 +48,21 @@
         apt:
             name: gitlab-runner
 
-# TODO: automate gitlab-runner registration with a secrets file
+      - name: register runner
+        #no_log: True
+        community.general.gitlab_runner:
+            api_url: "{{ gitlab_url }}"
+            registration_token: "{{ gitlab_runner_token }}"
+            api_token: "{{ gitlab_api_token }}"
+            description: Debian
+            active: True
+            tag_list: ['debian', 'linux']
+            run_untagged: True
+            locked: False
+            state: present
+
+      - name: modify runner config to use shell executor
+        lineinfile:
+            path: /etc/gitlab-runner/config.toml
+            regexp: '^executor ='
+            line: executor = shell
