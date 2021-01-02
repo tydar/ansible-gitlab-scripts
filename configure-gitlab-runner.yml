@@ -7,7 +7,7 @@
       - secrets/keys.yml
 
   tasks:
-      - name: ensure curl is installed
+      - name: ensure tools are installed
         apt:
             pkg:
                 - curl

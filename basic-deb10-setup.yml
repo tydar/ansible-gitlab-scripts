@@ -14,17 +14,12 @@
             groups: sudo
             append: yes
 
-      - name: install vim
+      - name: install basic tools
         apt:
-            name: vim
-
-      - name: install open-vm-tools
-        apt:
-            name: open-vm-tools
-
-      - name: install git
-        apt:
-            name: git
+            pkg:
+                - vim
+                - open-vm-tools
+                - git
 
       - name: pull vimrc from git
         become: yes
